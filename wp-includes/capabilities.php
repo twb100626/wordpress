@@ -119,15 +119,6 @@ function map_meta_cap( $cap, $user_id ) {
 				$caps[] = $post_type->cap->delete_private_posts;
 			}
 		}
-
-		/*
-		 * Setting the privacy policy page requires `manage_privacy_options`,
-		 * so deleting it should require that too.
-		 */
-		if ( (int) get_option( 'wp_page_for_privacy_policy' ) === $post->ID ) {
-			$caps = array_merge( $caps, map_meta_cap( 'manage_privacy_options', $user_id ) );
-		}
-
 		break;
 		// edit_post breaks down to edit_posts, edit_published_posts, or
 		// edit_others_posts
@@ -189,15 +180,6 @@ function map_meta_cap( $cap, $user_id ) {
 				$caps[] = $post_type->cap->edit_private_posts;
 			}
 		}
-
-		/*
-		 * Setting the privacy policy page requires `manage_privacy_options`,
-		 * so editing it should require that too.
-		 */
-		if ( (int) get_option( 'wp_page_for_privacy_policy' ) === $post->ID ) {
-			$caps = array_merge( $caps, map_meta_cap( 'manage_privacy_options', $user_id ) );
-		}
-
 		break;
 	case 'read_post':
 	case 'read_page':
@@ -450,7 +432,15 @@ function map_meta_cap( $cap, $user_id ) {
 		break;
 	case 'install_languages':
 	case 'update_languages':
-		if ( ! wp_is_file_mod_allowed( 'can_install_language_pack' ) ) {
+		if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/file.php' );
+		}
+
+		if ( ! function_exists( 'wp_can_install_language_pack' ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
+		}
+
+		if ( ! wp_can_install_language_pack() ) {
 			$caps[] = 'do_not_allow';
 		} elseif ( is_multisite() && ! is_super_admin( $user_id ) ) {
 			$caps[] = 'do_not_allow';
@@ -556,11 +546,6 @@ function map_meta_cap( $cap, $user_id ) {
 		} else {
 			$caps[] = 'manage_options';
 		}
-		break;
-	case 'export_others_personal_data':
-	case 'erase_others_personal_data':
-	case 'manage_privacy_options':
-		$caps[] = is_multisite() ? 'manage_network' : 'manage_options';
 		break;
 	default:
 		// Handle meta capabilities for custom post types.
