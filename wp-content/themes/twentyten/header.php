@@ -11,6 +11,7 @@
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
+<meta name="google-site-verification" content="_OEb66W0lb_a9rbucDQuyUcin2OCxp9oIXJRTpwy2uU" />
 <meta charset="<?php bloginfo( 'charset' ); ?>" />
 <title>
 <?php
