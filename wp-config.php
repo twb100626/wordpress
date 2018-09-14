@@ -25,7 +25,7 @@ define('DB_USER', 'twb');
 define('DB_PASSWORD', 'hb4zX9');
 
 /** MySQL 主機位址 */
-define('DB_HOST', '172.30.222.71');
+define('DB_HOST', '172.30.200.200');
 
 /** 建立資料表時預設的文字編碼 */
 define('DB_CHARSET', 'utf8mb4');
